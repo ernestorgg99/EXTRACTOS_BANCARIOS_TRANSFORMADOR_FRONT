@@ -133,8 +133,10 @@ function displayPreview(data) {
 }
 
 // --- COMUNICACIÓN CON BACKEND ---
+const API_BASE_URL = 'https://extractosbancariostransformadorbackend-production.up.railway.app';
+
 const sendDataToBackend = async (data) => {
-    const apiUrl = '/api/check_duplicates';
+    const apiUrl = `${API_BASE_URL}/api/check_duplicates`;
     document.getElementById('loading-overlay').style.display = 'flex';
     try {
         const response = await fetch(apiUrl, {
@@ -214,3 +216,21 @@ exportBtn.addEventListener('click', limpiarYExportar);
 initTabs();
 initDarkMode();
 window.cerrarModal = () => {}; // legacy
+
+// Verificar estado del servicio al cargar
+async function checkServiceStatus() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/status`);
+        const data = await response.json();
+        if (data.status !== 'aprobado') {
+            mostrarToast('⚠️ Servicio no disponible. Contacta al administrador.', 'error');
+            // Deshabilitar botones de transformación
+            document.querySelectorAll('.transform-btn').forEach(btn => btn.disabled = true);
+        }
+    } catch (error) {
+        console.error('Error verificando estado del servicio:', error);
+        mostrarToast('⚠️ No se puede conectar al servicio.', 'error');
+    }
+}
+
+window.addEventListener('load', checkServiceStatus);
