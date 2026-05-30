@@ -18,14 +18,17 @@ function initTabs() {
         btn.addEventListener('click', () => {
             const tabId = btn.dataset.tab;
             document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) targetTab.classList.add('active');
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         });
     });
 }
+
 function initDarkMode() {
     const toggle = document.getElementById('darkModeToggle');
+    if (!toggle) return;
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark');
         toggle.textContent = '☀️';
@@ -41,34 +44,41 @@ function initDarkMode() {
 // Toast notifications
 function mostrarToast(mensaje, tipo = 'info') {
     const toast = document.createElement('div');
-    toast.className = 'toast';
+    toast.className = `toast ${tipo}`;
     toast.textContent = mensaje;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
 }
 
 // --- MANEJO DE EVENTOS DRAG & DROP ---
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, preventDefaults, false);
-});
+if (dropArea) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.add('highlight'), false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight'), false);
+    });
+    dropArea.addEventListener('drop', handleDrop, false);
+}
+
 function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
 }
-['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, () => dropArea.classList.add('highlight'), false);
-});
-['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight'), false);
-});
-dropArea.addEventListener('drop', handleDrop, false);
-fileElem.addEventListener('change', handleFileSelect, false);
 
 function handleDrop(e) {
     const dt = e.dataTransfer;
     const files = dt.files;
     handleFile(files[0]);
 }
+
+if (fileElem) {
+    fileElem.addEventListener('change', handleFileSelect, false);
+}
+
 function handleFileSelect(e) {
     const files = e.target.files;
     if (files.length) handleFile(files[0]);
@@ -78,7 +88,7 @@ function handleFileSelect(e) {
 function handleFile(file) {
     if (!file) return;
     appState.currentFileName = file.name.split('.').slice(0, -1).join('.');
-    fileInfo.textContent = `Archivo cargado: ${file.name}`;
+    if (fileInfo) fileInfo.textContent = `Archivo cargado: ${file.name}`;
     const reader = new FileReader();
     const fileExtension = file.name.split('.').pop().toLowerCase();
     reader.onload = function(e) {
@@ -109,6 +119,7 @@ function handleFile(file) {
 }
 
 function displayPreview(data) {
+    if (!previewTable) return;
     previewTable.innerHTML = '';
     if (!data || data.length === 0) return;
     const thead = document.createElement('thead');
@@ -133,11 +144,17 @@ function displayPreview(data) {
 }
 
 // --- COMUNICACIÓN CON BACKEND ---
-const API_BASE_URL = 'https://extractosbancariostransformadorbackend-production.up.railway.app';
+const API_BASE_URL = ['127.0.0.1', 'localhost'].includes(window.location.hostname)
+    ? 'http://127.0.0.1:5001'
+    : 'https://extractosbancariostransformadorbackend-production.up.railway.app';
 
 const sendDataToBackend = async (data) => {
     const apiUrl = `${API_BASE_URL}/api/check_duplicates`;
-    document.getElementById('loading-overlay').style.display = 'flex';
+    const loadingOverlay = document.getElementById('loading-overlay');
+    
+    // Muestra el overlay removiendo de forma limpia la clase hidden
+    if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+    
     try {
         const response = await fetch(apiUrl, {
             method: 'POST',
@@ -153,10 +170,11 @@ const sendDataToBackend = async (data) => {
             mostrarToast("⚠️ No se recibió el extracto procesado del servidor.");
         }
     } catch (error) {
-        mostrarToast(`❌ Error: ${error.message}`);
+        mostrarToast(`❌ Error: ${error.message}`, 'error');
         console.error(error);
     } finally {
-        document.getElementById('loading-overlay').style.display = 'none';
+        // Oculta el overlay agregando de vuelta la clase hidden pase lo que pase
+        if (loadingOverlay) loadingOverlay.classList.add('hidden');
     }
 };
 
@@ -175,7 +193,7 @@ transformButtons.forEach(button => {
                 const transformedData = transformations[structure](originalDataCopy);
                 await sendDataToBackend(transformedData);
             } catch (error) {
-                mostrarToast(`Error al transformar: ${error.message}`);
+                mostrarToast(`Error al transformar: ${error.message}`, 'error');
                 console.error(error);
             }
         } else {
@@ -210,7 +228,7 @@ function limpiarYExportar() {
     setTimeout(() => location.reload(), 1500);
 }
 window.limpiarYExportar = limpiarYExportar;
-exportBtn.addEventListener('click', limpiarYExportar);
+if (exportBtn) exportBtn.addEventListener('click', limpiarYExportar);
 
 // Inicialización
 initTabs();
@@ -224,7 +242,6 @@ async function checkServiceStatus() {
         const data = await response.json();
         if (data.status !== 'aprobado') {
             mostrarToast('⚠️ Servicio no disponible. Contacta al administrador.', 'error');
-            // Deshabilitar botones de transformación
             document.querySelectorAll('.transform-btn').forEach(btn => btn.disabled = true);
         }
     } catch (error) {
@@ -234,3 +251,4 @@ async function checkServiceStatus() {
 }
 
 window.addEventListener('load', checkServiceStatus);
+// LLAVE DE CIERRE EXTRA COMENTADA Y ELIMINADA DE AQUÍ

@@ -1,534 +1,289 @@
 import { cleanLabel, parseAmount, excelDateToJSDate, formatDate, cleanLabelForStructure2 } from './utils.js';
 
-export const transformations = {
-    // Estructura 1: Exterior AVIPRORCA
-    "1-ExteriorAVIPRORCA": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        result.shift();
-        result = result.map(row => {
-            const amount = String(row[3] || '');
-            const sign = String(row[4] || '');
-            row[3] = sign.trim() === '-' ? '-' + amount : amount;
-            return row;
-        });
-        result = result.map(row => { row.splice(4, 2); return row; });
-        const diario = "Exterior AVIPRORCA";
-        result = result.map(row => [
+// ==========================================
+// PROCESADORES ESPECIALIZADOS POR FAMILIA
+// ==========================================
+
+// Familia 1: Exterior (AVIPRORCA / HPC) -> Quita cabecera, calcula signo con col 4
+const processExteriorTipo1 = (data, diario) => {
+    let result = JSON.parse(JSON.stringify(data));
+    result.shift();
+    const rows = result.map(row => {
+        const amount = String(row[3] || '');
+        const sign = String(row[4] || '');
+        const finalAmount = sign.trim() === '-' ? '-' + amount : amount;
+        return [
             cleanLabel(row[0]),
             formatDate(row[1]),
             row[2],
-            parseAmount(row[3]),
+            parseAmount(finalAmount),
             diario
-        ]);
-        result.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return result;
-    },
-    "1.1-Exterior $ AVIPRORCA": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        result.shift();
-        result = result.map(row => {
-            const amount = String(row[3] || '');
-            const sign = String(row[4] || '');
-            row[3] = sign.trim() === '-' ? '-' + amount : amount;
-            return row;
-        });
-        result = result.map(row => { row.splice(4, 2); return row; });
-        const diario = "Exterior Dolares AVIPRORCA";
-        result = result.map(row => [
-            cleanLabel(row[0]),
-            formatDate(row[1]),
-            row[2],
-            parseAmount(row[3]),
-            diario
-        ]);
-        result.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return result;
-    },
-    "1-ExteriorDetalesHPC": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        result.shift();
-        result = result.map(row => {
-            const amount = String(row[3] || '');
-            const sign = String(row[4] || '');
-            row[3] = sign.trim() === '-' ? '-' + amount : amount;
-            return row;
-        });
-        result = result.map(row => { row.splice(4, 2); return row; });
-        const diario = "Exterior Detales HPC";
-        result = result.map(row => [
-            cleanLabel(row[0]),
-            formatDate(row[1]),
-            row[2],
-            parseAmount(row[3]),
-            diario
-        ]);
-        result.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return result;
-    },
-    "2-ExteriorFRANCO": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        const diario = "Exterior FRANCO";
-        const formatDateExterior = (dateStr) => {
-            if (!dateStr || typeof dateStr !== 'string') return dateStr;
-            const parts = dateStr.split('/');
-            if (parts.length === 3) return `${parts[1]}/${parts[0]}/${parts[2]}`;
-            return dateStr;
-        };
-        result = result.map(row => [
-            cleanLabelForStructure2(row[3]),
-            formatDateExterior(row[1]),
-            row[4],
-            parseAmount(row[5]),
-            diario
-        ]);
-        result.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return result;
-    },
-    "2-Exterior(R)": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        const diario = "Exterior (R)";
-        const formatDateExterior = (dateStr) => {
-            if (!dateStr || typeof dateStr !== 'string') return dateStr;
-            const parts = dateStr.split('/');
-            if (parts.length === 3) return `${parts[1]}/${parts[0]}/${parts[2]}`;
-            return dateStr;
-        };
-        result = result.map(row => [
-            cleanLabelForStructure2(row[3]),
-            formatDateExterior(row[1]),
-            row[4],
-            parseAmount(row[5]),
-            diario
-        ]);
-        result.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return result;
-    },
-    "2-Exterior R Divisas $": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        const diario = "Exterior R Divisas $";
-        const formatDateExterior = (dateStr) => {
-            if (!dateStr || typeof dateStr !== 'string') return dateStr;
-            const parts = dateStr.split('/');
-            if (parts.length === 3) return `${parts[1]}/${parts[0]}/${parts[2]}`;
-            return dateStr;
-        };
-        result = result.map(row => [
-            cleanLabelForStructure2(row[3]),
-            formatDateExterior(row[1]),
-            row[4],
-            parseAmount(row[5]),
-            diario
-        ]);
-        result.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return result;
-    },
-    "2-Exterior(Y)": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        const diario = "Exterior (Y)";
-        const formatDateExterior = (dateStr) => {
-            if (!dateStr || typeof dateStr !== 'string') return dateStr;
-            const parts = dateStr.split('/');
-            if (parts.length === 3) return `${parts[1]}/${parts[0]}/${parts[2]}`;
-            return dateStr;
-        };
-        result = result.map(row => [
-            cleanLabelForStructure2(row[3]),
-            formatDateExterior(row[1]),
-            row[4],
-            parseAmount(row[5]),
-            diario
-        ]);
-        result.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return result;
-    },
-    "2-Exterior(W)": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        const diario = "Exterior (W)";
-        const formatDateExterior = (dateStr) => {
-            if (!dateStr || typeof dateStr !== 'string') return dateStr;
-            const parts = dateStr.split('/');
-            if (parts.length === 3) return `${parts[1]}/${parts[0]}/${parts[2]}`;
-            return dateStr;
-        };
-        result = result.map(row => [
-            cleanLabelForStructure2(row[3]),
-            formatDateExterior(row[1]),
-            row[4],
-            parseAmount(row[5]),
-            diario
-        ]);
-        result.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return result;
-    },
-    "2-Exterior W Divisas $": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        const diario = "Exterior W Divisas $";
-        const formatDateExterior = (dateStr) => {
-            if (!dateStr || typeof dateStr !== 'string') return dateStr;
-            const parts = dateStr.split('/');
-            if (parts.length === 3) return `${parts[1]}/${parts[0]}/${parts[2]}`;
-            return dateStr;
-        };
-        result = result.map(row => [
-            cleanLabelForStructure2(row[3]),
-            formatDateExterior(row[1]),
-            row[4],
-            parseAmount(row[5]),
-            diario
-        ]);
-        result.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return result;
-    },
-    "2-Exterior(AL)": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        const diario = "Exterior (AL)";
-        const formatDateExterior = (dateStr) => {
-            if (!dateStr || typeof dateStr !== 'string') return dateStr;
-            const parts = dateStr.split('/');
-            if (parts.length === 3) return `${parts[1]}/${parts[0]}/${parts[2]}`;
-            return dateStr;
-        };
-        result = result.map(row => [
-            cleanLabelForStructure2(row[3]),
-            formatDateExterior(row[1]),
-            row[4],
-            parseAmount(row[5]),
-            diario
-        ]);
-        result.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return result;
-    },
-    "2-Exterior AL Divisas $": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        const diario = "Exterior AL Divisas $";
-        const formatDateExterior = (dateStr) => {
-            if (!dateStr || typeof dateStr !== 'string') return dateStr;
-            const parts = dateStr.split('/');
-            if (parts.length === 3) return `${parts[1]}/${parts[0]}/${parts[2]}`;
-            return dateStr;
-        };
-        result = result.map(row => [
-            cleanLabelForStructure2(row[3]),
-            formatDateExterior(row[1]),
-            row[4],
-            parseAmount(row[5]),
-            diario
-        ]);
-        result.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return result;
-    },
-    "3-VenezuelaAVIPRORCA": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        const diario = "Venezuela AVIPRORCA";
-        let headers = result[0].map(h => {
-            if (typeof h === 'string') {
-                if (h.toLowerCase() === 'monto') return 'IMPORTE';
-                if (h.toLowerCase() === 'concepto') return 'ETIQUETA';
-                return h.toUpperCase();
+        ];
+    });
+    return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'], ...rows];
+};
+
+// Familia 2: Exterior (FRANCO / R / Y / W / AL) -> Mantiene cabecera, invierte fechas MM/DD
+const processExteriorTipo2 = (data, diario) => {
+    const formatDateExterior = (dateStr) => {
+        if (!dateStr || typeof dateStr !== 'string') return dateStr;
+        const parts = dateStr.split('/');
+        return parts.length === 3 ? `${parts[1]}/${parts[0]}/${parts[2]}` : dateStr;
+    };
+    const rows = data.map(row => [
+        cleanLabelForStructure2(row[3]),
+        formatDateExterior(row[1]),
+        row[4],
+        parseAmount(row[5]),
+        diario
+    ]);
+    return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'], ...rows];
+};
+
+// Familia 3: Venezuela -> Mapeo dinámico por nombres de columna originales
+const processVenezuela = (data, diario) => {
+    if (!data.length) return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']];
+    const headers = data[0].map(h => {
+        if (typeof h === 'string') {
+            if (h.toLowerCase() === 'monto') return 'IMPORTE';
+            if (h.toLowerCase() === 'concepto') return 'ETIQUETA';
+            return h.toUpperCase();
+        }
+        return h;
+    });
+    const idx = {
+        ETIQUETA: headers.indexOf('ETIQUETA'),
+        FECHA: headers.indexOf('FECHA'),
+        REFERENCIA: headers.indexOf('REFERENCIA'),
+        IMPORTE: headers.indexOf('IMPORTE')
+    };
+    const rows = data.slice(1).map(row => [
+        cleanLabel(row[idx.ETIQUETA]),
+        row[idx.FECHA],
+        row[idx.REFERENCIA],
+        parseAmount(row[idx.IMPORTE]),
+        diario
+    ]);
+    return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'], ...rows];
+};
+
+// Familia 4: Bancaribe -> Manejo de fechas seriales de Excel y lógica de referencias TDDC
+const processBancaribe = (data, diario) => {
+    const excelSerialToDate = (serial) => {
+        if (typeof serial !== 'number' || isNaN(serial)) return null;
+        return new Date((serial - 25569) * 86400 * 1000);
+    };
+    const parseBancaribeAmount = (amount) => {
+        if (typeof amount === 'number') return amount;
+        return parseFloat(String(amount).replace(/\./g, '').replace(',', '.')) || 0;
+    };
+
+    const rows = data.slice(1).map(row => {
+        let finalDate = row[0];
+        if (typeof row[0] === 'number') {
+            const dateObj = excelSerialToDate(row[0]);
+            if (dateObj) {
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                finalDate = `${day}/${month}/${dateObj.getFullYear()}`;
             }
-            return h;
-        });
-        result[0] = headers;
-        result = result.map(row => {
-            row.splice(7, 2);
-            row.splice(5, 1);
-            row.splice(3, 1);
-            return row;
-        });
-        const oldIndices = {
-            ETIQUETA: headers.indexOf('ETIQUETA'),
-            FECHA: headers.indexOf('FECHA'),
-            REFERENCIA: headers.indexOf('REFERENCIA'),
-            IMPORTE: headers.indexOf('IMPORTE')
-        };
-        result = result.map((row, index) => [
-            cleanLabel(row[oldIndices.ETIQUETA]),
-            row[oldIndices.FECHA],
-            row[oldIndices.REFERENCIA],
-            index > 0 ? parseAmount(row[oldIndices.IMPORTE]) : row[oldIndices.IMPORTE],
+        }
+        let amountWithSign = row[4];
+        if (row[3] === 'D') amountWithSign = '-' + row[4];
+        let finalReference = String(row[1] || '');
+        if (/TD[DC] - ADMINISTRACION/.test(row[2] || '')) {
+            if (finalReference.length >= 11) finalReference = finalReference.substring(7, 10);
+        }
+        return [
+            cleanLabel(row[2]),
+            finalDate,
+            finalReference,
+            parseBancaribeAmount(amountWithSign),
             diario
-        ]);
-        result[0] = ['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'];
-        return result;
-    },
-    "3-VenezuelaDetalesHPC": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        const diario = "Venezuela Detales HPC";
-        let headers = result[0].map(h => {
-            if (typeof h === 'string') {
-                if (h.toLowerCase() === 'monto') return 'IMPORTE';
-                if (h.toLowerCase() === 'concepto') return 'ETIQUETA';
-                return h.toUpperCase();
-            }
-            return h;
-        });
-        result[0] = headers;
-        result = result.map(row => {
-            row.splice(7, 2);
-            row.splice(5, 1);
-            row.splice(3, 1);
-            return row;
-        });
-        const oldIndices = {
-            ETIQUETA: headers.indexOf('ETIQUETA'),
-            FECHA: headers.indexOf('FECHA'),
-            REFERENCIA: headers.indexOf('REFERENCIA'),
-            IMPORTE: headers.indexOf('IMPORTE')
-        };
-        result = result.map((row, index) => [
-            cleanLabel(row[oldIndices.ETIQUETA]),
-            row[oldIndices.FECHA],
-            row[oldIndices.REFERENCIA],
-            index > 0 ? parseAmount(row[oldIndices.IMPORTE]) : row[oldIndices.IMPORTE],
-            diario
-        ]);
-        result[0] = ['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'];
-        return result;
-    },
-    "4-BancaribeAVIPRORCA": (data) => {
-        const excelSerialToDate = (serial) => {
-            if (typeof serial !== 'number' || isNaN(serial)) return null;
-            const daysSince1900 = serial - 25569;
-            return new Date(daysSince1900 * 86400 * 1000);
-        };
-        const parseBancaribeAmount = (amount) => {
-            if (typeof amount === 'number') return amount;
-            let cleaned = String(amount).replace(/\./g, '').replace(',', '.');
-            return parseFloat(cleaned) || 0;
-        };
-        let result = JSON.parse(JSON.stringify(data));
-        result.shift();
-        const diario = "Bancaribe AVIPRORCA";
-        const transformedRows = result.map(row => {
-            let finalDate = row[0];
-            if (typeof row[0] === 'number') {
-                const dateObj = excelSerialToDate(row[0]);
-                if (dateObj) {
-                    const day = String(dateObj.getDate()).padStart(2, '0');
-                    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                    const year = dateObj.getFullYear();
-                    finalDate = `${day}/${month}/${year}`;
-                }
-            }
-            let amountWithSign = row[4];
-            if (row[3] === 'D') amountWithSign = '-' + row[4];
-            let finalReference = String(row[1] || '');
-            if (/TD[DC] - ADMINISTRACION/.test(row[2] || '')) {
-                if (finalReference.length >= 11) finalReference = finalReference.substring(7, 10);
-            }
-            return [
-                cleanLabel(row[2]),
-                finalDate,
-                finalReference,
-                parseBancaribeAmount(amountWithSign),
-                diario
-            ];
-        });
-        transformedRows.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return transformedRows;
-    },
-    "4-BancaribeDetalesHPC": (data) => {
-        const excelSerialToDate = (serial) => {
-            if (typeof serial !== 'number' || isNaN(serial)) return null;
-            const daysSince1900 = serial - 25569;
-            return new Date(daysSince1900 * 86400 * 1000);
-        };
-        const parseBancaribeAmount = (amount) => {
-            if (typeof amount === 'number') return amount;
-            let cleaned = String(amount).replace(/\./g, '').replace(',', '.');
-            return parseFloat(cleaned) || 0;
-        };
-        let result = JSON.parse(JSON.stringify(data));
-        result.shift();
-        const diario = "Bancaribe Detales HPC";
-        const transformedRows = result.map(row => {
-            let finalDate = row[0];
-            if (typeof row[0] === 'number') {
-                const dateObj = excelSerialToDate(row[0]);
-                if (dateObj) {
-                    const day = String(dateObj.getDate()).padStart(2, '0');
-                    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                    const year = dateObj.getFullYear();
-                    finalDate = `${day}/${month}/${year}`;
-                }
-            }
-            let amountWithSign = row[4];
-            if (row[3] === 'D') amountWithSign = '-' + row[4];
-            let finalReference = String(row[1] || '');
-            if (/TD[DC] - ADMINISTRACION/.test(row[2] || '')) {
-                if (finalReference.length >= 11) finalReference = finalReference.substring(7, 10);
-            }
-            return [
-                cleanLabel(row[2]),
-                finalDate,
-                finalReference,
-                parseBancaribeAmount(amountWithSign),
-                diario
-            ];
-        });
-        transformedRows.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return transformedRows;
-    },
-    "4.1-BancaribeFranco": (data) => {
-        const excelSerialToDate = (serial) => {
-            if (typeof serial !== 'number' || isNaN(serial)) return null;
-            const daysSince1900 = serial - 25569;
-            return new Date(daysSince1900 * 86400 * 1000);
-        };
-        const parseBancaribeAmount = (amount) => {
-            if (typeof amount === 'number') return amount;
-            let cleaned = String(amount).replace(/\./g, '').replace(',', '.');
-            return parseFloat(cleaned) || 0;
-        };
-        let result = JSON.parse(JSON.stringify(data));
-        result.shift();
-        const diario = "BanCaribe Franco";
-        const transformedRows = result.map(row => {
-            let finalDate = row[0];
-            if (typeof row[0] === 'number') {
-                const dateObj = excelSerialToDate(row[0]);
-                if (dateObj) {
-                    const day = String(dateObj.getDate()).padStart(2, '0');
-                    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                    const year = dateObj.getFullYear();
-                    finalDate = `${day}/${month}/${year}`;
-                }
-            }
-            let amountWithSign = row[4];
-            if (row[3] === 'D') amountWithSign = '-' + row[4];
-            let finalReference = String(row[1] || '');
-            if (/TD[DC] - ADMINISTRACION/.test(row[2] || '')) {
-                if (finalReference.length >= 11) finalReference = finalReference.substring(7, 10);
-            }
-            return [
-                cleanLabel(row[2]),
-                finalDate,
-                finalReference,
-                parseBancaribeAmount(amountWithSign),
-                diario
-            ];
-        });
-        transformedRows.unshift(['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']);
-        return transformedRows;
-    },
-    "5-BanescoAVIPRORCA": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        let headers = result[0].map(h => {
-            if (typeof h === 'string') {
-                if (h.toLowerCase() === 'monto') return 'IMPORTE';
-                if (h.toLowerCase().includes('descripci')) return 'ETIQUETA';
-                return h.toUpperCase();
-            }
-            return h;
-        });
-        result[0] = headers;
-        result = result.map(row => { row.splice(4, 1); return row; });
-        const diario = "Banesco AVIPRORCA";
-        const headerRow = result[0];
-        const oldIndices = {
-            ETIQUETA: headerRow.indexOf('ETIQUETA'),
-            FECHA: headerRow.indexOf('FECHA'),
-            REFERENCIA: headerRow.indexOf('REFERENCIA'),
-            IMPORTE: headerRow.indexOf('IMPORTE')
-        };
-        const formatDateBanesco = (dateStr) => {
-            if (!dateStr || typeof dateStr !== 'string') return dateStr;
-            const parts = dateStr.split('/');
-            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-            return dateStr;
-        };
-        result = result.map((row, index) => [
-            cleanLabel(row[oldIndices.ETIQUETA]),
-            index > 0 ? formatDateBanesco(row[oldIndices.FECHA]) : row[oldIndices.FECHA],
-            row[oldIndices.REFERENCIA],
-            index > 0 ? parseAmount(row[oldIndices.IMPORTE]) : row[oldIndices.IMPORTE],
-            diario
-        ]);
-        result[0] = ['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'];
-        return result;
-    },
-    "5-BanescoFRANCO": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        let headers = result[0].map(h => {
-            if (typeof h === 'string') {
-                if (h.toLowerCase() === 'monto') return 'IMPORTE';
-                if (h.toLowerCase().includes('descripci')) return 'ETIQUETA';
-                return h.toUpperCase();
-            }
-            return h;
-        });
-        result[0] = headers;
-        result = result.map(row => { row.splice(4, 1); return row; });
-        const diario = "Banesco FRANCO";
-        const headerRow = result[0];
-        const oldIndices = {
-            ETIQUETA: headerRow.indexOf('ETIQUETA'),
-            FECHA: headerRow.indexOf('FECHA'),
-            REFERENCIA: headerRow.indexOf('REFERENCIA'),
-            IMPORTE: headerRow.indexOf('IMPORTE')
-        };
-        const formatDateBanesco = (dateStr) => {
-            if (!dateStr || typeof dateStr !== 'string') return dateStr;
-            const parts = dateStr.split('/');
-            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-            return dateStr;
-        };
-        result = result.map((row, index) => [
-            cleanLabel(row[oldIndices.ETIQUETA]),
-            index > 0 ? formatDateBanesco(row[oldIndices.FECHA]) : row[oldIndices.FECHA],
-            row[oldIndices.REFERENCIA],
-            index > 0 ? parseAmount(row[oldIndices.IMPORTE]) : row[oldIndices.IMPORTE],
-            diario
-        ]);
-        result[0] = ['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'];
-        return result;
-    },
-    // ==================== PROVINCIAL CORREGIDO ====================
-    "6-ProvincialAVIPRORCA": (data) => {
-        let result = JSON.parse(JSON.stringify(data));
-        // Detección flexible de columnas
-        let headers = result[0].map((h, idx) => {
-            if (typeof h === 'string') {
-                let normalized = h.toLowerCase()
-                                 .normalize("NFD")
-                                 .replace(/[\u0300-\u036f]/g, "")
-                                 .replace(/[^a-z0-9]/g, "")
-                                 .trim();
-                // Acepta "descrip" (cubre Descripción, Descripci�n, etc.)
-                if (normalized.includes('descrip') || normalized.includes('concepto') || normalized.includes('detalle')) {
-                    return 'ETIQUETA';
-                }
-                if (normalized.includes('fecha')) return 'FECHA';
-                if (normalized.includes('referencia') || normalized.includes('refer')) return 'REFERENCIA';
-                if (normalized.includes('importe') || normalized.includes('monto')) return 'IMPORTE';
-            }
-            return h;
-        });
-        result[0] = headers;
-        const idx = {
-            ETIQUETA: headers.indexOf('ETIQUETA'),
-            FECHA: headers.indexOf('FECHA'),
-            REFERENCIA: headers.indexOf('REFERENCIA'),
-            IMPORTE: headers.indexOf('IMPORTE')
-        };
-        // Si no encuentra alguna, asume posiciones por defecto (ajusta según tu archivo)
-        if (idx.ETIQUETA === -1) idx.ETIQUETA = 2;   // comúnmente columna 3
-        if (idx.FECHA === -1) idx.FECHA = 0;
-        if (idx.REFERENCIA === -1) idx.REFERENCIA = 1;
-        if (idx.IMPORTE === -1) idx.IMPORTE = 4;
-        return result.map((row, index) => {
-            if (index === 0) return ['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'];
-            const etiquetaRaw = row[idx.ETIQUETA] || "";
-            const fechaRaw = row[idx.FECHA] || "";
-            const referenciaRaw = row[idx.REFERENCIA] || "";
-            const importeRaw = row[idx.IMPORTE] || "0";
-            return [
-                cleanLabel(etiquetaRaw),
-                fechaRaw.toString().replace(/-/g, '/'),
-                referenciaRaw.toString().trim(),
-                parseAmount(importeRaw),
-                "Provincial AVIPRORCA"
-            ];
-        });
+        ];
+    });
+    return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'], ...rows];
+};
+
+// Familia 5: Banesco -> Mapeo dinámico e inversión de fecha YYYY/MM/DD
+const processBanesco = (data, diario) => {
+    if (!data.length) return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']];
+    const headers = data[0].map(h => {
+        if (typeof h === 'string') {
+            if (h.toLowerCase() === 'monto') return 'IMPORTE';
+            if (h.toLowerCase().includes('descripci')) return 'ETIQUETA';
+            return h.toUpperCase();
+        }
+        return h;
+    });
+    const idx = {
+        ETIQUETA: headers.indexOf('ETIQUETA'),
+        FECHA: headers.indexOf('FECHA'),
+        REFERENCIA: headers.indexOf('REFERENCIA'),
+        IMPORTE: headers.indexOf('IMPORTE')
+    };
+    const formatDateBanesco = (dateStr) => {
+        if (!dateStr || typeof dateStr !== 'string') return dateStr;
+        const parts = dateStr.split('/');
+        return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr;
+    };
+    const rows = data.slice(1).map(row => [
+        cleanLabel(row[idx.ETIQUETA]),
+        formatDateBanesco(row[idx.FECHA]),
+        row[idx.REFERENCIA],
+        parseAmount(row[idx.IMPORTE]),
+        diario
+    ]);
+    return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'], ...rows];
+};
+
+// Familia 6: Provincial -> Detección difusa de nombres de columna con fallbacks fijos
+const processProvincial = (data, diario) => {
+    if (!data.length) return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']];
+    const headers = data[0].map(h => {
+        if (typeof h === 'string') {
+            let normalized = h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "").trim();
+            if (normalized.includes('descrip') || normalized.includes('concepto') || normalized.includes('detalle')) return 'ETIQUETA';
+            if (normalized.includes('fecha')) return 'FECHA';
+            if (normalized.includes('referencia') || normalized.includes('refer')) return 'REFERENCIA';
+            if (normalized.includes('importe') || normalized.includes('monto')) return 'IMPORTE';
+        }
+        return h;
+    });
+    const idxETIQUETA = headers.indexOf('ETIQUETA') !== -1 ? headers.indexOf('ETIQUETA') : 2;
+    const idxFECHA = headers.indexOf('FECHA') !== -1 ? headers.indexOf('FECHA') : 0;
+    const idxREFERENCIA = headers.indexOf('REFERENCIA') !== -1 ? headers.indexOf('REFERENCIA') : 1;
+    const idxIMPORTE = headers.indexOf('IMPORTE') !== -1 ? headers.indexOf('IMPORTE') : 4;
+
+    const rows = data.slice(1).map(row => [
+        cleanLabel(row[idxETIQUETA] || ""),
+        (row[idxFECHA] || "").toString().replace(/-/g, '/'),
+        (row[idxREFERENCIA] || "").toString().trim(),
+        parseAmount(row[idxIMPORTE] || "0"),
+        diario
+    ]);
+    return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'], ...rows];
+};
+
+// Familia 7: Banco del Tesoro -> Escaneo dinámico de fila de cabecera y fusión Débito/Crédito
+const processBancoTesoro = (data, diario) => {
+    if (!Array.isArray(data) || data.length === 0) {
+        return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO']];
     }
+    const normalizeText = (cell) => typeof cell === 'string' ? cell.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') : '';
+    
+    let headerRowIndex = data.findIndex(row => {
+        if (!Array.isArray(row)) return false;
+        const normRow = row.map(normalizeText);
+        return normRow.some(c => c.includes('fecha')) &&
+               normRow.some(c => c.includes('referencia')) &&
+               normRow.some(c => c.includes('concepto') || c.includes('detalle') || c.includes('movimiento'));
+    });
+
+    if (headerRowIndex === -1) headerRowIndex = 3;
+
+    const headerNames = (data[headerRowIndex] || []).map(normalizeText);
+    const idxFecha = headerNames.findIndex(h => h.includes('fecha'));
+    const idxReferencia = headerNames.findIndex(h => h.includes('referencia'));
+    const idxConcepto = headerNames.findIndex(h => h.includes('concepto') || h.includes('detalle') || h.includes('movimiento'));
+    const idxDebito = headerNames.findIndex(h => h.includes('debito') || h.includes('deb'));
+    const idxCredito = headerNames.findIndex(h => h.includes('credito') || h.includes('cred'));
+
+    const finalIdxDebito = idxDebito !== -1 ? idxDebito : 5;
+    const finalIdxCredito = idxCredito !== -1 ? idxCredito : 6;
+
+    const parseDateValue = (value) => {
+        if (typeof value === 'number' && !isNaN(value)) {
+            const dateObj = excelDateToJSDate(value);
+            if (dateObj instanceof Date && !isNaN(dateObj)) {
+                return `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
+            }
+        }
+        if (typeof value === 'string') {
+            const text = value.trim();
+            if (text.includes('/')) return formatDate(text);
+            if (text.includes('-')) {
+                const parts = text.split('-');
+                if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+        }
+        return value;
+    };
+    const rows = data.slice(headerRowIndex + 1).map(row => {
+        const debito = parseAmount(row[finalIdxDebito] || 0);
+        const credito = parseAmount(row[finalIdxCredito] || 0);
+        const importe = debito !== 0 ? -Math.abs(debito) : credito;
+        
+        // Extraemos y formateamos los valores base de la fila actual
+        const etiquetaRaw = row[idxConcepto] || '';
+        const fechaFormateada = parseDateValue(row[idxFecha] || '');
+        let referenciaFinal = String(row[idxReferencia] || '').trim();
+
+        // =========================================================================
+        // NUEVA REGLA: Inyección de referencias dinámicas para TDD vacías
+        // =========================================================================
+        const etiquetaStr = String(etiquetaRaw);
+        const patrones = ["LQ TDD 87949028", "COM/LIQ/TDD 87949028"];
+
+        for (const patron of patrones) {
+            if (etiquetaStr.includes(patron)) {
+                // Extraemos lo que quede a la derecha del patrón (ej: " VAL-4567")
+                const resto = etiquetaStr.split(patron)[1] || "";
+                
+                // Creamos la referencia uniendo la Fecha Formateada + Resto de la etiqueta (sin espacios)
+                referenciaFinal = `${fechaFormateada}${resto}`.replace(/\s+/g, '').trim();
+                break; // Rompemos el ciclo al encontrar la primera coincidencia
+            }
+        }
+        // =========================================================================
+
+        return [
+            cleanLabel(etiquetaRaw),
+            fechaFormateada,
+            referenciaFinal, // Retorna la original del banco o la autogenerada arriba
+            importe,
+            diario
+        ];
+    });
+
+    return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'], ...rows];
+};
+
+// ==========================================
+// EXPORTACIÓN DE ESTRUCTURAS (MAPEO)
+// ==========================================
+export const transformations = {
+    // Estructuras Tipo 1 (Exterior)
+    "1-ExteriorAVIPRORCA": (data) => processExteriorTipo1(data, "Exterior AVIPRORCA"),
+    "1.1-Exterior $ AVIPRORCA": (data) => processExteriorTipo1(data, "Exterior Dolares AVIPRORCA"),
+    "1-ExteriorDetalesHPC": (data) => processExteriorTipo1(data, "Exterior Detales HPC"),
+
+    // Estructuras Tipo 2 (Exterior variantes)
+    "2-ExteriorFRANCO": (data) => processExteriorTipo2(data, "Exterior FRANCO"),
+    "2-Exterior(R)": (data) => processExteriorTipo2(data, "Exterior (R)"),
+    "2-Exterior R Divisas $": (data) => processExteriorTipo2(data, "Exterior R Divisas $"),
+    "2-Exterior(Y)": (data) => processExteriorTipo2(data, "Exterior (Y)"),
+    "2-Exterior(W)": (data) => processExteriorTipo2(data, "Exterior (W)"),
+    "2-Exterior W Divisas $": (data) => processExteriorTipo2(data, "Exterior W Divisas $"),
+    "2-Exterior(AL)": (data) => processExteriorTipo2(data, "Exterior (AL)"),
+    "2-Exterior AL Divisas $": (data) => processExteriorTipo2(data, "Exterior AL Divisas $"),
+
+    // Estructuras Tipo 3 (Venezuela)
+    "3-VenezuelaAVIPRORCA": (data) => processVenezuela(data, "Venezuela AVIPRORCA"),
+    "3-VenezuelaDetalesHPC": (data) => processVenezuela(data, "Venezuela Detales HPC"),
+
+    // Estructuras Tipo 4 (Bancaribe)
+    "4-BancaribeAVIPRORCA": (data) => processBancaribe(data, "Bancaribe AVIPRORCA"),
+    "4-BancaribeDetalesHPC": (data) => processBancaribe(data, "Bancaribe Detales HPC"),
+    "4.1-BancaribeFranco": (data) => processBancaribe(data, "BanCaribe Franco"),
+
+    // Estructuras Tipo 5 (Banesco)
+    "5-BanescoAVIPRORCA": (data) => processBanesco(data, "Banesco AVIPRORCA"),
+    "5-BanescoFRANCO": (data) => processBanesco(data, "Banesco FRANCO"),
+
+    // Estructura Tipo 6 (Provincial)
+    "6-ProvincialAVIPRORCA": (data) => processProvincial(data, "Provincial AVIPRORCA"),
+
+    // Nueva Estructura Tipo 7 (Banco del Tesoro)
+    "7-Banco_del_TesoroAVIPRORCA": (data) => processBancoTesoro(data, "Banco del Tesoro")
 };

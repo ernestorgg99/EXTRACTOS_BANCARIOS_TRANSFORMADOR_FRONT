@@ -6,141 +6,140 @@
     <link rel="icon" type="image/png" href="static/logos/logo_ergg99.png">
     <title>Transformador de Extractos Bancarios</title>
     <link rel="stylesheet" href="static/styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="static/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="app-container">
         <header>
             <div class="logo-title">
-                <img src="static/logos/logo_ergg99.png" alt="ERGG99" class="logo-ergg99">
+                <img src="static/logos/logo_ergg99.png" alt="" class="logo-ergg99" aria-hidden="true">
                 <h1>Transformador de Extractos Bancarios</h1>
             </div>
-            <button id="darkModeToggle" class="dark-toggle">🌙</button>
+            <button id="darkModeToggle" class="dark-toggle" aria-label="Cambiar tema de color">🌙</button>
         </header>
 
-        <!-- Pestañas (tabs) para agrupar bancos -->
-        <div class="tab-bar">
+        <nav class="tab-bar" aria-label="Selección de Banco">
             <button class="tab-btn active" data-tab="exterior">🏦 Exterior</button>
             <button class="tab-btn" data-tab="venezuela">🏦 Venezuela</button>
             <button class="tab-btn" data-tab="bancaribe">🏦 Bancaribe</button>
             <button class="tab-btn" data-tab="banesco">🏦 Banesco</button>
             <button class="tab-btn" data-tab="tesoro">🏦 Tesoro</button>
             <button class="tab-btn" data-tab="provincial">🏦 Provincial</button>
-        </div>
+        </nav>
 
-        <!-- Contenido de pestañas -->
-        <div id="tab-exterior" class="tab-content active">
-            <div class="buttons-grid">
-                <button class="transform-btn" data-structure="1.1-Exterior $ AVIPRORCA">
-                    <img src="static/logos/banco-exterior-ve-logo.png" alt="Exterior">
-                    <span>Exterior $ AVIPRORCA</span>
-                </button>
-                <button class="transform-btn" data-structure="2-Exterior R Divisas $">
-                    <img src="static/logos/banco-exterior-ve-logo.png" alt="Exterior">
-                    <span>Exterior $ R</span>
-                </button>
-                <button class="transform-btn" data-structure="2-Exterior AL Divisas $">
-                    <img src="static/logos/banco-exterior-ve-logo.png" alt="Exterior">
-                    <span>Exterior AL Divisas $</span>
-                </button>
-                <button class="transform-btn" data-structure="2-Exterior W Divisas $">
-                    <img src="static/logos/banco-exterior-ve-logo.png" alt="Exterior">
-                    <span>Exterior W Divisas $</span>
-                </button>
-                <button class="transform-btn" data-structure="1-ExteriorAVIPRORCA">
-                    <img src="static/logos/banco-exterior-ve-logo.png" alt="Exterior">
-                    <span>Exterior AVIPRORCA</span>
-                </button>
-                <button class="transform-btn" data-structure="1-ExteriorDetalesHPC">
-                    <img src="static/logos/banco-exterior-ve-logo.png" alt="Exterior">
-                    <span>Exterior Detales HPC</span>
-                </button>
-                <button class="transform-btn" data-structure="2-ExteriorFRANCO">
-                    <img src="static/logos/banco-exterior-ve-logo.png" alt="Exterior">
-                    <span>Exterior FRANCO</span>
-                </button>
-                <button class="transform-btn" data-structure="2-Exterior(R)">
-                    <img src="static/logos/banco-exterior-ve-logo.png" alt="Exterior">
-                    <span>Exterior (R)</span>
-                </button>
-                <button class="transform-btn" data-structure="2-Exterior(Y)">
-                    <img src="static/logos/banco-exterior-ve-logo.png" alt="Exterior">
-                    <span>Exterior (Y)</span>
-                </button>
-                <button class="transform-btn" data-structure="2-Exterior(W)">
-                    <img src="static/logos/banco-exterior-ve-logo.png" alt="Exterior">
-                    <span>Exterior (W)</span>
-                </button>
-                <button class="transform-btn" data-structure="2-Exterior(AL)">
-                    <img src="static/logos/banco-exterior-ve-logo.png" alt="Exterior">
-                    <span>Exterior (AL)</span>
-                </button>
+        <main>
+            <div id="tab-exterior" class="tab-content active">
+                <div class="buttons-grid">
+                    <button class="transform-btn" data-structure="1.1-Exterior $ AVIPRORCA">
+                        <img src="static/logos/banco-exterior-ve-logo.png" alt="">
+                        <span>Exterior $ AVIPRORCA</span>
+                    </button>
+                    <button class="transform-btn" data-structure="2-Exterior R Divisas $">
+                        <img src="static/logos/banco-exterior-ve-logo.png" alt="">
+                        <span>Exterior $ R</span>
+                    </button>
+                    <button class="transform-btn" data-structure="2-Exterior AL Divisas $">
+                        <img src="static/logos/banco-exterior-ve-logo.png" alt="">
+                        <span>Exterior AL Divisas $</span>
+                    </button>
+                    <button class="transform-btn" data-structure="2-Exterior W Divisas $">
+                        <img src="static/logos/banco-exterior-ve-logo.png" alt="">
+                        <span>Exterior W Divisas $</span>
+                    </button>
+                    <button class="transform-btn" data-structure="1-ExteriorAVIPRORCA">
+                        <img src="static/logos/banco-exterior-ve-logo.png" alt="">
+                        <span>Exterior AVIPRORCA</span>
+                    </button>
+                    <button class="transform-btn" data-structure="1-ExteriorDetalesHPC">
+                        <img src="static/logos/banco-exterior-ve-logo.png" alt="">
+                        <span>Exterior Detales HPC</span>
+                    </button>
+                    <button class="transform-btn" data-structure="2-ExteriorFRANCO">
+                        <img src="static/logos/banco-exterior-ve-logo.png" alt="">
+                        <span>Exterior FRANCO</span>
+                    </button>
+                    <button class="transform-btn" data-structure="2-Exterior(R)">
+                        <img src="static/logos/banco-exterior-ve-logo.png" alt="">
+                        <span>Exterior (R)</span>
+                    </button>
+                    <button class="transform-btn" data-structure="2-Exterior(Y)">
+                        <img src="static/logos/banco-exterior-ve-logo.png" alt="">
+                        <span>Exterior (Y)</span>
+                    </button>
+                    <button class="transform-btn" data-structure="2-Exterior(W)">
+                        <img src="static/logos/banco-exterior-ve-logo.png" alt="">
+                        <span>Exterior (W)</span>
+                    </button>
+                    <button class="transform-btn" data-structure="2-Exterior(AL)">
+                        <img src="static/logos/banco-exterior-ve-logo.png" alt="">
+                        <span>Exterior (AL)</span>
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <div id="tab-venezuela" class="tab-content">
-            <div class="buttons-grid">
-                <button class="transform-btn" data-structure="3-VenezuelaAVIPRORCA">
-                    <img src="static/logos/bdv-banco-de-venezuela-logo.png" alt="Venezuela">
-                    <span>Venezuela AVIPRORCA</span>
-                </button>
-                <button class="transform-btn" data-structure="3-VenezuelaDetalesHPC">
-                    <img src="static/logos/bdv-banco-de-venezuela-logo.png" alt="Venezuela">
-                    <span>Venezuela Detales HPC</span>
-                </button>
+            <div id="tab-venezuela" class="tab-content">
+                <div class="buttons-grid">
+                    <button class="transform-btn" data-structure="3-VenezuelaAVIPRORCA">
+                        <img src="static/logos/bdv-banco-de-venezuela-logo.png" alt="">
+                        <span>Venezuela AVIPRORCA</span>
+                    </button>
+                    <button class="transform-btn" data-structure="3-VenezuelaDetalesHPC">
+                        <img src="static/logos/bdv-banco-de-venezuela-logo.png" alt="">
+                        <span>Venezuela Detales HPC</span>
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <div id="tab-bancaribe" class="tab-content">
-            <div class="buttons-grid">
-                <button class="transform-btn" data-structure="4-BancaribeAVIPRORCA">
-                    <img src="static/logos/bancaribe-logo.png" alt="Bancaribe">
-                    <span>Bancaribe AVIPRORCA</span>
-                </button>
-                <button class="transform-btn" data-structure="4-BancaribeDetalesHPC">
-                    <img src="static/logos/bancaribe-logo.png" alt="Bancaribe">
-                    <span>Bancaribe Detales HPC</span>
-                </button>
-                <button class="transform-btn" data-structure="4.1-BancaribeFranco">
-                    <img src="static/logos/bancaribe-logo.png" alt="Bancaribe">
-                    <span>Ban Caribe Franco</span>
-                </button>
+            <div id="tab-bancaribe" class="tab-content">
+                <div class="buttons-grid">
+                    <button class="transform-btn" data-structure="4-BancaribeAVIPRORCA">
+                        <img src="static/logos/bancaribe-logo.png" alt="">
+                        <span>Bancaribe AVIPRORCA</span>
+                    </button>
+                    <button class="transform-btn" data-structure="4-BancaribeDetalesHPC">
+                        <img src="static/logos/bancaribe-logo.png" alt="">
+                        <span>Bancaribe Detales HPC</span>
+                    </button>
+                    <button class="transform-btn" data-structure="4.1-BancaribeFranco">
+                        <img src="static/logos/bancaribe-logo.png" alt="">
+                        <span>Ban Caribe Franco</span>
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <div id="tab-banesco" class="tab-content">
-            <div class="buttons-grid">
-                <button class="transform-btn" data-structure="5-BanescoAVIPRORCA">
-                    <img src="static/logos/Banesco-Logo-.png" alt="Banesco">
-                    <span>Banesco AVIPRORCA</span>
-                </button>
-                <button class="transform-btn" data-structure="5-BanescoFRANCO">
-                    <img src="static/logos/Banesco-Logo-.png" alt="Banesco">
-                    <span>Banesco FRANCO</span>
-                </button>
+            <div id="tab-banesco" class="tab-content">
+                <div class="buttons-grid">
+                    <button class="transform-btn" data-structure="5-BanescoAVIPRORCA">
+                        <img src="static/logos/Banesco-Logo-.png" alt="">
+                        <span>Banesco AVIPRORCA</span>
+                    </button>
+                    <button class="transform-btn" data-structure="5-BanescoFRANCO">
+                        <img src="static/logos/Banesco-Logo-.png" alt="">
+                        <span>Banesco FRANCO</span>
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <div id="tab-tesoro" class="tab-content">
-            <div class="buttons-grid">
-                <button class="transform-btn" data-structure="7-Banco_del_TesoroAVIPRORCA">
-                    <img src="static/logos/banco-del-tesoro.png" alt="Banco del Tesoro">
-                    <span>Banco del Tesoro AVI</span>
-                </button>
+            <div id="tab-tesoro" class="tab-content">
+                <div class="buttons-grid">
+                    <button class="transform-btn" data-structure="7-Banco_del_TesoroAVIPRORCA">
+                        <img src="static/logos/banco-del-tesoro.png" alt="">
+                        <span>Banco del Tesoro AVI</span>
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <div id="tab-provincial" class="tab-content">
-            <div class="buttons-grid">
-                <button class="transform-btn" data-structure="6-ProvincialAVIPRORCA">
-                    <img src="static/logos/Logo Provincial.png" alt="Provincial">
-                    <span>Provincial Avi</span>
-                </button>
+            <div id="tab-provincial" class="tab-content">
+                <div class="buttons-grid">
+                    <button class="transform-btn" data-structure="6-ProvincialAVIPRORCA">
+                        <img src="static/logos/Logo Provincial.png" alt="">
+                        <span>Provincial Avi</span>
+                    </button>
+                </div>
             </div>
-        </div>
+        </main>
 
-        <!-- Área de arrastre y previsualización -->
-        <div class="workspace">
+        <section class="workspace">
             <div id="drop-area">
                 <p>📂 Arrastra y suelta tu archivo (Excel/CSV)</p>
                 <label class="btn-file">
@@ -162,15 +161,14 @@
                     </table>
                 </div>
             </div>
-        </div>
+        </section>
 
         <footer>
-            <p>2026 WEB DEV ERGG99. Todos los derechos reservados.</p>
+            <p>&copy; <span id="current-year"></span> WEB DEV ERGG99. Todos los derechos reservados.</p>
         </footer>
     </div>
 
-    <!-- Overlay de carga -->
-    <div id="loading-overlay" style="display: none;">
+    <div id="loading-overlay" class="loading-overlay hidden">
         <div class="loading-spinner">
             <div class="spinner"></div>
             <p>Procesando comparación...</p>
@@ -178,7 +176,5 @@
     </div>
 
     <script src="static/script.js" type="module"></script>
-    <script src="static/transformations.js" type="module"></script>
-    <script src="static/utils.js" type="module"></script>
 </body>
 </html>
