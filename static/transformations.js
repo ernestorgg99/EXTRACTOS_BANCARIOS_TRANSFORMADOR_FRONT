@@ -223,7 +223,7 @@ const processBancoTesoro = (data, diario) => {
         // NUEVA REGLA: Inyección de referencias dinámicas para TDD vacías
         // =========================================================================
         const etiquetaStr = String(etiquetaRaw);
-        const patrones = ["LQ TDD 87949028", "COM/LIQ/TDD 87949028"];
+        const patrones = ["LQ TDD 87949028", "COM/LIQ/TDD 87949028", "LQ TDC 87949028", "COM/LIQ/TDC 87949028"];
 
         for (const patron of patrones) {
             if (etiquetaStr.includes(patron)) {
