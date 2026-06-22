@@ -256,6 +256,7 @@ export const transformations = {
     // Estructuras Tipo 1 (Exterior)
     "1-ExteriorAVIPRORCA": (data) => processExteriorTipo1(data, "Exterior AVIPRORCA"),
     "1.1-Exterior $ AVIPRORCA": (data) => processExteriorTipo1(data, "Exterior Dolares AVIPRORCA"),
+    "1.2-Exterior Avip Divisas Electronicas": (data) => processExteriorTipo1(data, "Exterior Dolares AVIPRORCA"),
     "1-ExteriorDetalesHPC": (data) => processExteriorTipo1(data, "Exterior Detales HPC"),
 
     // Estructuras Tipo 2 (Exterior variantes)
