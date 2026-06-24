@@ -277,6 +277,7 @@ export const transformations = {
     "4-BancaribeAVIPRORCA": (data) => processBancaribe(data, "Bancaribe AVIPRORCA"),
     "4-BancaribeDetalesHPC": (data) => processBancaribe(data, "Bancaribe Detales HPC"),
     "4.1-BancaribeFranco": (data) => processBancaribe(data, "BanCaribe Franco"),
+    "4.2-Bancaribe_Aviprorca_Divisas_$": (data) => processBancaribe(data, "Ban Caribe Aviprorca Divisas $"),
 
     // Estructuras Tipo 5 (Banesco)
     "5-BanescoAVIPRORCA": (data) => processBanesco(data, "Banesco AVIPRORCA"),
