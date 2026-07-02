@@ -287,5 +287,6 @@ export const transformations = {
     "6-ProvincialAVIPRORCA": (data) => processProvincial(data, "Provincial AVIPRORCA"),
 
     // Nueva Estructura Tipo 7 (Banco del Tesoro)
-    "7-Banco_del_TesoroAVIPRORCA": (data) => processBancoTesoro(data, "Banco del Tesoro")
+    "7-Banco_del_TesoroAVIPRORCA": (data) => processBancoTesoro(data, "Banco del Tesoro"),
+    "7-Banco_del_TesoroAVIPRORCA": (data) => processBancoTesoro(data, "Banco del Tesoro Divisas $")
 };
