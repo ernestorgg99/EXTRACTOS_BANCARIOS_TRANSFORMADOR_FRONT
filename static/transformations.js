@@ -253,7 +253,8 @@ const processBancoTesoro = (data, diario) => {
 // EXPORTACIÓN DE ESTRUCTURAS (MAPEO)
 // ==========================================
 export const transformations = {
-    // Estructuras Tipo 1 (Exterior)
+    // Estructuras Tipo 1 (Exterior), esta es otra prueba de deploy
+    
     "1-ExteriorAVIPRORCA": (data) => processExteriorTipo1(data, "Exterior AVIPRORCA"),
     "1.1-Exterior $ AVIPRORCA": (data) => processExteriorTipo1(data, "Exterior Dolares AVIPRORCA"),
     "1.2-Exterior Avip Divisas Electronicas": (data) => processExteriorTipo1(data, "Exterior Avip Divisas Electronicas"),
