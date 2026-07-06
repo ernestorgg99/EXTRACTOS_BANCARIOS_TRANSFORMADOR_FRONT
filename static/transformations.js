@@ -261,6 +261,7 @@ export const transformations = {
 
     // Estructuras Tipo 2 (Exterior variantes)
     "2-ExteriorFRANCO": (data) => processExteriorTipo2(data, "Exterior FRANCO"),
+    "2.1-ExteriorFRANCODivisas$": (data) => processExteriorTipo2(data, "Exterior Franco Divisas $"),
     "2-Exterior(R)": (data) => processExteriorTipo2(data, "Exterior (R)"),
     "2-Exterior R Divisas $": (data) => processExteriorTipo2(data, "Exterior R Divisas $"),
     "2-Exterior(Y)": (data) => processExteriorTipo2(data, "Exterior (Y)"),
