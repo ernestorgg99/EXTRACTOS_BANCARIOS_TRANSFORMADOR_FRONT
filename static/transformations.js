@@ -85,7 +85,7 @@ const processBancaribe = (data, diario) => {
             if (dateObj) {
                 const day = String(dateObj.getDate()).padStart(2, '0');
                 const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                finalDate = `${day}/${month}/${dateObj.getFullYear()}`;
+                finalDate = `${month}/${day}/${dateObj.getFullYear()}`;
             }
         }
         let amountWithSign = row[4];
