@@ -78,7 +78,7 @@ const processBancaribe = (data, diario) => {
         return parseFloat(String(amount).replace(/\./g, '').replace(',', '.')) || 0;
     };
 
-    const rows = data.slice(1).map(row => {
+    const rows = data.slice(5).map(row => {
         let finalDate = row[0];
         if (typeof row[0] === 'number') {
             const dateObj = excelSerialToDate(row[0]);
