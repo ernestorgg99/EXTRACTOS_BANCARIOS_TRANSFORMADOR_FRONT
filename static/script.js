@@ -233,22 +233,4 @@ if (exportBtn) exportBtn.addEventListener('click', limpiarYExportar);
 // Inicialización
 initTabs();
 initDarkMode();
-window.cerrarModal = () => {}; // legacy
-
-// Verificar estado del servicio al cargar
-async function checkServiceStatus() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/status`);
-        const data = await response.json();
-        if (data.status !== 'aprobado') {
-            mostrarToast('⚠️ Servicio no disponible. Contacta al administrador.', 'error');
-            document.querySelectorAll('.transform-btn').forEach(btn => btn.disabled = true);
-        }
-    } catch (error) {
-        console.error('Error verificando estado del servicio:', error);
-        mostrarToast('⚠️ No se puede conectar al servicio.', 'error');
-    }
-}
-
-window.addEventListener('load', checkServiceStatus);
-// LLAVE DE CIERRE EXTRA COMENTADA Y ELIMINADA DE AQUÍ
+window.cerrarModal = () => {};
