@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Pruebas locales: frontend y API simulada",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				".vscode/local-test-server.cjs"
+			],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "test"
+		}
+	]
+}

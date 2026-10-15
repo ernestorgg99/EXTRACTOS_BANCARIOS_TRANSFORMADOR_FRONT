@@ -249,6 +249,72 @@ const processBancoTesoro = (data, diario) => {
     return [['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'], ...rows];
 };
 
+// Bicentenario / Banco Digital de los Trabajadores -> Detecta cabecera y unifica débitos/créditos
+const processBicentenario = (data, diario) => {
+    const outputHeader = ['ETIQUETA', 'FECHA', 'REFERENCIA', 'IMPORTE', 'DIARIO'];
+    if (!Array.isArray(data) || data.length === 0) return [outputHeader];
+
+    const normalizeText = (cell) => typeof cell === 'string'
+        ? cell.toLowerCase()
+            .replace(/&([a-z]+);/g, (entity, name) => ({
+                aacute: 'a', eacute: 'e', iacute: 'i', oacute: 'o', uacute: 'u', ntilde: 'n'
+            })[name] || entity)
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '')
+        : '';
+
+    const headerRowIndex = data.findIndex(row => {
+        if (!Array.isArray(row)) return false;
+        const headers = row.map(normalizeText);
+        return headers.some(h => h.includes('fecha')) &&
+            headers.some(h => h.includes('concepto') || h.includes('descripcion')) &&
+            headers.some(h => h.includes('debito')) &&
+            headers.some(h => h.includes('credito'));
+    });
+    if (headerRowIndex === -1) return [outputHeader];
+
+    const headers = data[headerRowIndex].map(normalizeText);
+    const idxFecha = headers.findIndex(h => h.includes('fecha'));
+    const idxReferencia = headers.findIndex(h => h.includes('referencia'));
+    const idxConcepto = headers.findIndex(h => h.includes('concepto') || h.includes('descripcion'));
+    const idxDebito = headers.findIndex(h => h.includes('debito'));
+    const idxCredito = headers.findIndex(h => h.includes('credito'));
+
+    const formatDate = (value) => {
+        if (value instanceof Date && !Number.isNaN(value.getTime())) {
+            return `${String(value.getDate()).padStart(2, '0')}/${String(value.getMonth() + 1).padStart(2, '0')}/${value.getFullYear()}`;
+        }
+        if (typeof value === 'number' && Number.isFinite(value)) {
+            const date = excelDateToJSDate(value);
+            if (!Number.isNaN(date.getTime())) {
+                return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+            }
+        }
+        const text = String(value ?? '').trim();
+        let match = text.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+        if (match) return `${match[1].padStart(2, '0')}/${match[2].padStart(2, '0')}/${match[3]}`;
+        match = text.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+        if (match) return `${match[3].padStart(2, '0')}/${match[2].padStart(2, '0')}/${match[1]}`;
+        return '';
+    };
+
+    const rows = data.slice(headerRowIndex + 1).flatMap(row => {
+        if (!Array.isArray(row)) return [];
+        const fecha = formatDate(row[idxFecha]);
+        if (!fecha) return []; // Descarta líneas en blanco y el resumen del estado de cuenta.
+
+        const debito = parseAmount(row[idxDebito] || '0');
+        const credito = parseAmount(row[idxCredito] || '0');
+        const importe = debito !== 0 ? -Math.abs(debito) : credito;
+        const etiqueta = row[idxConcepto] || '';
+        const referencia = row[idxReferencia] == null ? '' : String(row[idxReferencia]).trim();
+
+        if (!etiqueta && !referencia && debito === 0 && credito === 0) return [];
+        return [[cleanLabel(etiqueta), fecha, referencia, importe, diario]];
+    });
+
+    return [outputHeader, ...rows];
+};
+
 // ==========================================
 // EXPORTACIÓN DE ESTRUCTURAS (MAPEO)
 // ==========================================
@@ -290,5 +356,8 @@ export const transformations = {
 
     // Nueva Estructura Tipo 7 (Banco del Tesoro)
     "7-Banco_del_TesoroAVIPRORCA": (data) => processBancoTesoro(data, "Banco del Tesoro"),
-    "7.1-Banco_del_TesoroAVIPRORCA$": (data) => processBancoTesoro(data, "Banco del Tesoro Divisas $")
+    "7.1-Banco_del_TesoroAVIPRORCA$": (data) => processBancoTesoro(data, "Banco del Tesoro Divisas $"),
+
+    // Bicentenario / Banco Digital de los Trabajadores
+    "7-bicentenarioAVIPRORCA": (data) => processBicentenario(data, "Bicentenario AVIPRORCA")
 };
