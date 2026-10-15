@@ -369,5 +369,5 @@ export const transformations = {
     "7.1-Banco_del_TesoroAVIPRORCA$": (data) => processBancoTesoro(data, "Banco del Tesoro Divisas $"),
 
     // Bicentenario / Banco Digital de los Trabajadores
-    "7-bicentenarioAVIPRORCA": (data) => processBicentenario(data, "Bicentenario AVIPRORCA")
+    "7-bicentenarioAVIPRORCA": (data) => processBicentenario(data, "Banco Bicentenario")
 };
