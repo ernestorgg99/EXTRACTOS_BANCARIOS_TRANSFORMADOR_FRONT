@@ -273,6 +273,7 @@ const processBicentenario = (data, diario) => {
     if (headerRowIndex === -1) return [outputHeader];
 
     const headers = data[headerRowIndex].map(normalizeText);
+    const idxNumero = headers.findIndex(h => h === 'nro' || h.includes('numero'));
     const idxFecha = headers.findIndex(h => h.includes('fecha'));
     const idxReferencia = headers.findIndex(h => h.includes('referencia'));
     const idxConcepto = headers.findIndex(h => h.includes('concepto') || h.includes('descripcion'));
@@ -306,7 +307,16 @@ const processBicentenario = (data, diario) => {
         const credito = parseAmount(row[idxCredito] || '0');
         const importe = debito !== 0 ? -Math.abs(debito) : credito;
         const etiqueta = row[idxConcepto] || '';
-        const referencia = row[idxReferencia] == null ? '' : String(row[idxReferencia]).trim();
+        let referencia = row[idxReferencia] == null ? '' : String(row[idxReferencia]).trim();
+
+        // Genera una referencia reproducible para estos cargos cuando el banco no proporciona una.
+        const conceptoNormalizado = normalizeText(etiqueta);
+        const esCargoSinReferencia = conceptoNormalizado.includes('cargoemisionedodecuenta') ||
+            conceptoNormalizado.includes('cargoporservicio');
+        const numeroMovimiento = idxNumero !== -1 ? String(row[idxNumero] ?? '').trim() : '';
+        if (!referencia && esCargoSinReferencia && numeroMovimiento) {
+            referencia = `${fecha}-${numeroMovimiento}`;
+        }
 
         if (!etiqueta && !referencia && debito === 0 && credito === 0) return [];
         return [[cleanLabel(etiqueta), fecha, referencia, importe, diario]];
